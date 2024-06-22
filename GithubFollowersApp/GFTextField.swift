@@ -1,10 +1,3 @@
-//
-//  GFTextField.swift
-//  GithubFollowersApp
-//
-//  Created by E5000866 on 21/06/24.
-//
-
 import UIKit
 
 class GFTextField: UITextField {
@@ -37,7 +30,8 @@ class GFTextField: UITextField {
         minimumFontSize = 12
         backgroundColor = .tertiarySystemBackground
         autocorrectionType = .no
-        
+        //customises the return button on keyboard
+        returnKeyType = .go
         placeholder = "Enter the username"
     }
     

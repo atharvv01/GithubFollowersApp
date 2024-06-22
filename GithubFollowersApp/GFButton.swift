@@ -1,10 +1,3 @@
-//
-//  GFButton.swift
-//  GithubFollowersApp
-//
-//  Created by E5000866 on 20/06/24.
-//
-
 import UIKit
 
 class GFButton: UIButton {

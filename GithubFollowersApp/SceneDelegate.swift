@@ -1,10 +1,3 @@
-//
-//  SceneDelegate.swift
-//  GithubFollowersApp
-//
-//  Created by E5000866 on 18/06/24.
-//
-
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -19,6 +12,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         window?.rootViewController = createTabbar()
         window?.makeKeyAndVisible()
+        configureNavigationBar()
     }
 
     
@@ -45,6 +39,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tabbar.viewControllers = [createSearchNavigationNC(),createFavoritesNC()]
         
         return tabbar
+    }
+    
+    //this function gives all the navigation bar green tints
+    func configureNavigationBar() {
+        UINavigationBar.appearance().tintColor = .systemGreen
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

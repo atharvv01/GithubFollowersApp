@@ -1,10 +1,3 @@
-//
-//  SearchViewController.swift
-//  GithubFollowersApp
-//
-//  Created by E5000866 on 19/06/24.
-//
-
 import UIKit
 
 class SearchViewController: UIViewController {
@@ -13,18 +6,46 @@ class SearchViewController: UIViewController {
     let usernameTextField = GFTextField()
     let callToActionButton = GFButton(backgroundColour: .systemGreen, title: "Get Followers")
     
+    //this is computed property to check wether entered username is empty or not
+    var isUsernameEntered: Bool {
+        return !usernameTextField.text!.isEmpty
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureLogoImageView()
         configureTextField()
         configureCallToActionButton()
+        createDismissKeyboardTapGesture()
     }
     
     //here for this particular screen we dont want navigation bar , now we could have done it in viewDidLoad,
     //but it is only called once and viewWillAppear is called every time view appears
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.isHidden = true
+    }
+    
+    
+    /*
+     Here we can see that when a keyboard pops up but dosent disappear when clicked on the screen
+     this function helps acheving it
+     */
+    func createDismissKeyboardTapGesture() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIView.endEditing))
+        view.addGestureRecognizer(tap)
+        
+    }
+    
+    //Function to push username to next vc so that we can call api there
+    @objc func pushFollowersListViewController(){
+        //checking if username is empty or not
+        guard isUsernameEntered else{
+            return
+        }
+        let followersListVC = FollowerListViewController()
+        followersListVC.username = usernameTextField.text
+        followersListVC.title = usernameTextField.text
+        navigationController?.pushViewController(followersListVC, animated: true)
     }
     
     func configureLogoImageView(){
@@ -42,7 +63,9 @@ class SearchViewController: UIViewController {
     
     func configureTextField(){
         view.addSubview(usernameTextField)
-
+        //here we need to also tell delegate what to listen to , otherwise it wont act
+        usernameTextField.delegate = self
+        
         NSLayoutConstraint.activate([
             usernameTextField.topAnchor.constraint(equalTo:logoImageView.bottomAnchor , constant: 48),
             usernameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
@@ -55,7 +78,8 @@ class SearchViewController: UIViewController {
     
     func configureCallToActionButton(){
         view.addSubview(callToActionButton)
-
+        callToActionButton.addTarget(self, action: #selector(pushFollowersListViewController), for: .touchUpInside)
+        
         NSLayoutConstraint.activate([
             callToActionButton.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.bottomAnchor , constant: -50),
             callToActionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
@@ -64,6 +88,17 @@ class SearchViewController: UIViewController {
         ])
         
     }
-    
-    
+}
+
+//here we are extending the class just to conform it to delegate , you need not compulsorily do this,
+//you can confrom it above as well where class os created , this makes it readable
+
+/*
+ We are conforming this to delegate because , delegate is basically use to listen to functions/actions
+ */
+extension SearchViewController : UITextFieldDelegate{
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        pushFollowersListViewController()
+        return true
+    }
 }

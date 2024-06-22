@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  GithubFollowersApp
-//
-//  Created by E5000866 on 18/06/24.
-//
-
 import UIKit
 
 @main
