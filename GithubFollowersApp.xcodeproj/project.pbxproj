@@ -70,22 +70,54 @@
 		A7459D852C216A8F005E73C7 /* GithubFollowersApp */ = {
 			isa = PBXGroup;
 			children = (
-				A7459D862C216A8F005E73C7 /* AppDelegate.swift */,
-				A7459D882C216A8F005E73C7 /* SceneDelegate.swift */,
-				A7459DF62C294CA5005E73C7 /* GFTitleLabel.swift */,
-				A7459DF82C295469005E73C7 /* GFBodyLabel.swift */,
-				A7459DFA2C2955CA005E73C7 /* GFAlertViewController.swift */,
-				A7459DFC2C296571005E73C7 /* UIViewController+Ext.swift */,
-				A7459DF02C24362E005E73C7 /* GFButton.swift */,
-				A7459D9A2C22E1BA005E73C7 /* SearchViewController.swift */,
-				A7459DF42C275158005E73C7 /* FollowerListViewController.swift */,
-				A7459DF22C2558C9005E73C7 /* GFTextField.swift */,
-				A7459D9C2C22E250005E73C7 /* FavoritesListViewController.swift */,
-				A7459D8F2C216A92005E73C7 /* Assets.xcassets */,
-				A7459D912C216A92005E73C7 /* LaunchScreen.storyboard */,
+				A7459DFE2C298899005E73C7 /* Screens */,
+				A7459E012C29896E005E73C7 /* Support */,
+				A7459DFF2C2988F3005E73C7 /* Custom Views */,
+				A7459E002C298921005E73C7 /* Extensions */,
 				A7459D942C216A92005E73C7 /* Info.plist */,
 			);
 			path = GithubFollowersApp;
+			sourceTree = "<group>";
+		};
+		A7459DFE2C298899005E73C7 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				A7459D9A2C22E1BA005E73C7 /* SearchViewController.swift */,
+				A7459DF42C275158005E73C7 /* FollowerListViewController.swift */,
+				A7459D9C2C22E250005E73C7 /* FavoritesListViewController.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		A7459DFF2C2988F3005E73C7 /* Custom Views */ = {
+			isa = PBXGroup;
+			children = (
+				A7459DFA2C2955CA005E73C7 /* GFAlertViewController.swift */,
+				A7459DF62C294CA5005E73C7 /* GFTitleLabel.swift */,
+				A7459DF82C295469005E73C7 /* GFBodyLabel.swift */,
+				A7459DF02C24362E005E73C7 /* GFButton.swift */,
+				A7459DF22C2558C9005E73C7 /* GFTextField.swift */,
+			);
+			path = "Custom Views";
+			sourceTree = "<group>";
+		};
+		A7459E002C298921005E73C7 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				A7459DFC2C296571005E73C7 /* UIViewController+Ext.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		A7459E012C29896E005E73C7 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				A7459D8F2C216A92005E73C7 /* Assets.xcassets */,
+				A7459D912C216A92005E73C7 /* LaunchScreen.storyboard */,
+				A7459D862C216A8F005E73C7 /* AppDelegate.swift */,
+				A7459D882C216A8F005E73C7 /* SceneDelegate.swift */,
+			);
+			path = Support;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
