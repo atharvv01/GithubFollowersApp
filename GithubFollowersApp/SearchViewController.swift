@@ -13,6 +13,7 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         configureLogoImageView()
         configureTextField()
         configureCallToActionButton()
@@ -25,21 +26,24 @@ class SearchViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
     
-    
     /*
      Here we can see that when a keyboard pops up but dosent disappear when clicked on the screen
      this function helps acheving it
      */
     func createDismissKeyboardTapGesture() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(UIView.endEditing))
-        view.addGestureRecognizer(tap)
-        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
+    
+    @objc func dismissKeyboard() {
+            view.endEditing(true)
+        }
     
     //Function to push username to next vc so that we can call api there
     @objc func pushFollowersListViewController(){
         //checking if username is empty or not
         guard isUsernameEntered else{
+            presentGFAlertOnMainThread(title: "Username is Empty", message: "Please eneter username, we need to know whom to look for ", buttonTitle: "OK")
             return
         }
         let followersListVC = FollowerListViewController()
