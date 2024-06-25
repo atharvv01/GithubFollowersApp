@@ -17,7 +17,7 @@ class FollowerListViewController: UIViewController {
             
             guard let followers = followers else{
                 //lets show error message in alert
-                self.presentGFAlertOnMainThread(title: "Bad stuff", message: errorMessage!, buttonTitle: "OK")
+                self.presentGFAlertOnMainThread(title: "Bad stuff", message: errorMessage!.rawValue, buttonTitle: "OK")
                 return
             }
             print ("Followers.count = \(followers.count)")

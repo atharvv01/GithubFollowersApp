@@ -8,7 +8,11 @@ class NetworkManager {
     
     private init() {}
     
-    func getFollowers (for username : String , page : Int , completed : @escaping ([Follower]? , String?) -> Void)
+    /*
+     Here for completed closure we either get array of list of followers or error message but since we using
+     enums for error message we pass the name of that enum
+     */
+    func getFollowers (for username : String , page : Int , completed : @escaping ([Follower]? , ErrorMessage?) -> Void)
     {
         let endpoint = baseURL + "\(username)/followers?per_page&page=\(page)"
         //now we cant pass this directly we need to convert it to url object
@@ -24,7 +28,7 @@ class NetworkManager {
              Now since this is a closure asking for two return values , one is followers and another is error message as string ]
              followers will be nil since url wasnt valid and we didnt get array of followers as a response
              */
-            completed(nil,"This username created an invalid request. Please try again")
+            completed(nil,.invalidUsername)
             return
         }
         
@@ -36,7 +40,7 @@ class NetworkManager {
             
             if let _ = error {
                 //now since error usually occures when internet connection is bad we will pass in this error message
-                completed(nil,"Unable to complete our request. Please check your internet connection")
+                completed(nil,.unableToComplete)
                 return
             }
             
@@ -45,12 +49,12 @@ class NetworkManager {
              equal to 200 i.e of it is succesfull it wont enter the scope else it will (means it was not successfull
              */
             guard let response = response as? HTTPURLResponse , response.statusCode == 200 else{
-                completed(nil, "Invalid response from the server please try again")
+                completed(nil, .invalidResponse)
                 return
             }
             
             guard let data = data else{
-                completed(nil,"Data received from the server is invalid. Please try again")
+                completed(nil,.invalidData)
                 return
             }
             
@@ -73,7 +77,7 @@ class NetworkManager {
                 completed(followers,nil)
             } catch {
                 //now if try in above block fails it will throw error in this block
-                completed(nil,"Data received from the server is invalid. Please try again")
+                completed(nil,.invalidData)
             }
             
         }
