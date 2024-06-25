@@ -23,7 +23,8 @@ class SearchViewController: UIViewController {
     //here for this particular screen we dont want navigation bar , now we could have done it in viewDidLoad,
     //but it is only called once and viewWillAppear is called every time view appears
     override func viewWillAppear(_ animated: Bool) {
-        navigationController?.navigationBar.isHidden = true
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     /*
