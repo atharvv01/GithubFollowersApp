@@ -12,7 +12,14 @@ class NetworkManager {
      Here for completed closure we either get array of list of followers or error message but since we using
      enums for error message we pass the name of that enum
      */
-    func getFollowers (for username : String , page : Int , completed : @escaping ([Follower]? , ErrorMessage?) -> Void)
+    //func getFollowers (for username : String , page : Int , completed : @escaping ([Follower]? , ErrorMessage?) -> Void
+    
+    /*
+     This is another way where we use a new way in closures , since before escaping closure could return any of two(followers or
+     errorMessage ) while both being optional it was like hendeling 4 cases but by using results there or only two possiblites
+     1.Success 2.Failure
+     */
+    func getFollowers (for username : String , page : Int , completed : @escaping (Result<[Follower] , GFError>) -> Void)
     {
         let endpoint = baseURL + "\(username)/followers?per_page&page=\(page)"
         //now we cant pass this directly we need to convert it to url object
@@ -28,7 +35,7 @@ class NetworkManager {
              Now since this is a closure asking for two return values , one is followers and another is error message as string ]
              followers will be nil since url wasnt valid and we didnt get array of followers as a response
              */
-            completed(nil,.invalidUsername)
+            completed(.failure(.invalidUsername))
             return
         }
         
@@ -40,7 +47,7 @@ class NetworkManager {
             
             if let _ = error {
                 //now since error usually occures when internet connection is bad we will pass in this error message
-                completed(nil,.unableToComplete)
+                completed(.failure(.unableToComplete))
                 return
             }
             
@@ -49,12 +56,12 @@ class NetworkManager {
              equal to 200 i.e of it is succesfull it wont enter the scope else it will (means it was not successfull
              */
             guard let response = response as? HTTPURLResponse , response.statusCode == 200 else{
-                completed(nil, .invalidResponse)
+                completed(.failure(.invalidResponse))
                 return
             }
             
             guard let data = data else{
-                completed(nil,.invalidData)
+                completed(.failure(.invalidData))
                 return
             }
             
@@ -74,10 +81,10 @@ class NetworkManager {
                  */
                 let followers = try decoder.decode([Follower].self, from: data)
                 //if everything is succesfull we will have array of followers and no error message
-                completed(followers,nil)
+                completed(.success(followers))
             } catch {
                 //now if try in above block fails it will throw error in this block
-                completed(nil,.invalidData)
+                completed(.failure(.invalidData))
             }
             
         }

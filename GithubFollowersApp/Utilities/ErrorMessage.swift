@@ -1,7 +1,8 @@
 import Foundation
 
 //here this means all cases will have string type values (RAW VLAUE CONCEPT - ENUM)
-enum ErrorMessage : String {
+//here we also conform it error to use it in result (Swif5 concept)
+enum GFError : String , Error {
     
     case invalidUsername = "This username created an invalid request. Please try again"
     case unableToComplete = "Unable to complete our request. Please check your internet connection"
