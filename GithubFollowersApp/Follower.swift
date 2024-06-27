@@ -1,6 +1,6 @@
 import Foundation
  
-struct Follower : Codable {
+struct Follower : Codable , Hashable {
     //now here we need to match the name of entities to that in json response
     var login : String
     
