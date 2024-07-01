@@ -10,6 +10,9 @@ class FollowerListViewController: UIViewController {
     var username : String!
     var followers : [Follower] = []
     var collectionView : UICollectionView!
+    var page = 1
+    //flag to check wether user has more followers or not
+    var hasMoreFollowers = true
     
     /*
      Here what we are doing is using diffable data source which is new in ios 13 where in when we want out table/collection view to be dynamic
@@ -34,7 +37,7 @@ class FollowerListViewController: UIViewController {
         configureCollectionView()
         
         //lets call api here
-        getFollowers()
+        getFollowers(username: username, page: page)
         
         configureDataSource()
     }
@@ -54,19 +57,20 @@ class FollowerListViewController: UIViewController {
     
     func configureCollectionView(){
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createThreeColumnFlowLayout(in: view))
+        collectionView.delegate = self
         view.addSubview(collectionView)
         collectionView.backgroundColor = .systemBackground
         //setting cell for collection view
         collectionView.register(FollowerCell.self, forCellWithReuseIdentifier: FollowerCell.reuseID)
     }
     
-    func getFollowers(){
+    func getFollowers( username:String, page:Int){
         /*
          Here we see theres a strong refrence between self and network manager which should be there,
          Instead there should be a weak refrence , so we will use a capture list "[weak self]" which means all the self here will be
          weak
          */
-        NetworkManager.shared.getFollowers(for: username, page: 1) { [weak self] result in
+        NetworkManager.shared.getFollowers(for: username, page: page) { [weak self] result in
             //whenever we make self weak it gets converted to optional , so we will unwrap the optional using guard
             guard let self = self else {
                 return
@@ -75,7 +79,12 @@ class FollowerListViewController: UIViewController {
             //Now since we are using result it has only two cases ..succes and failure which we will check using enum
             switch result {
             case.success(let followers):
-                self.followers = followers
+                //checks if fetched followers are 100 or less if less than 100 means dont make another api call
+                if followers.count < 30 {
+                    self.hasMoreFollowers = false
+                }
+                //here when we load page 2 page 1 followers will disapper so for that to not happen we have used .append
+                self.followers.append(contentsOf: followers)
                 self.updateData()
             case.failure(let error):
                 self.presentGFAlertOnMainThread(title: "Bad stuff", message: error.rawValue, buttonTitle: "OK")
@@ -114,8 +123,25 @@ class FollowerListViewController: UIViewController {
         DispatchQueue.main.async {
             self.dataSource.apply(snapshot, animatingDifferences: true)
         }
-        
-        
     }
+}
 
+extension FollowerListViewController : UICollectionViewDelegate {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        print("Dragging Ended")
+        //this calculates the amount of height scrolled
+        let offsetY = scrollView.contentOffset.y
+        //this calculates the amount of heigh content requires
+        let contentHeight = scrollView.contentSize.height
+        //this calculates the height of screen
+        let height = scrollView.frame.size.height
+        
+        if offsetY > contentHeight - height {
+            guard hasMoreFollowers else {
+                return
+            }
+            page = page + 1
+            getFollowers(username: username, page: page)
+        }
+    }
 }
