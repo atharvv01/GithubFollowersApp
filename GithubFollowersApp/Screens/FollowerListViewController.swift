@@ -50,22 +50,10 @@ class FollowerListViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
-    func createThreeColumnFlowLayout() ->UICollectionViewFlowLayout {
-        let width = view.bounds.width
-        let padding :CGFloat = 12
-        let minimumItemSpacing : CGFloat = 10
-        let availableWidth = width - (padding*2) - (minimumItemSpacing*2)
-        let itemWidth = availableWidth/3
-        
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.sectionInset = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
-        flowLayout.itemSize = CGSize(width: itemWidth, height: itemWidth + 40)
-         
-        return flowLayout
-    }
+   
     
     func configureCollectionView(){
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createThreeColumnFlowLayout())
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createThreeColumnFlowLayout(in: view))
         view.addSubview(collectionView)
         collectionView.backgroundColor = .systemBackground
         //setting cell for collection view
@@ -73,10 +61,18 @@ class FollowerListViewController: UIViewController {
     }
     
     func getFollowers(){
-        NetworkManager.shared.getFollowers(for: username, page: 1) { result in
+        /*
+         Here we see theres a strong refrence between self and network manager which should be there,
+         Instead there should be a weak refrence , so we will use a capture list "[weak self]" which means all the self here will be
+         weak
+         */
+        NetworkManager.shared.getFollowers(for: username, page: 1) { [weak self] result in
+            //whenever we make self weak it gets converted to optional , so we will unwrap the optional using guard
+            guard let self = self else {
+                return
+            }
             
             //Now since we are using result it has only two cases ..succes and failure which we will check using enum
-            
             switch result {
             case.success(let followers):
                 self.followers = followers

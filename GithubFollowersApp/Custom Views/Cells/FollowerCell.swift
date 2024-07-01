@@ -15,10 +15,11 @@ class FollowerCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //what this function does is it sets the title to the name of the user
+    //what this function does is it sets the title and avatar to the name of the user
     func set (follower: Follower)
     {
         usernameLabel.text = follower.login
+        avatarImageView.downloadImage(from: follower.avatarUrl)
     }
     
     private func configure(){
