@@ -1,10 +1,15 @@
-import Foundation
+import UIKit
 
 //here we are creating this singleton class so that a singke instance is used by everyone
 class NetworkManager {
+    
     static let shared = NetworkManager()
+    
     //this is the base url for the api
-    let baseURL = "https://api.github.com/users/"
+    private let baseURL = "https://api.github.com/users/"
+    
+    //we are intializing cache here so that we have a single instance and not a new instance is created everytime cell is reused
+    let cache = NSCache<NSString, UIImage>()
     
     private init() {}
     

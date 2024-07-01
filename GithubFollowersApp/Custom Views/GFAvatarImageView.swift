@@ -2,6 +2,8 @@ import UIKit
 
 class GFAvatarImageView: UIImageView {
 
+    let cache = NetworkManager.shared.cache
+    
     //we will force unwrap here since we know image already exists in ur bundle
     let placeholderImage = UIImage(named: "avatar-placeholder")!
     
@@ -25,6 +27,17 @@ class GFAvatarImageView: UIImageView {
     
     func downloadImage(from urlString : String)
     {
+        //now before downloading the image , we will check wether it is present in cache or not
+        //converting string to nsstring
+        let cacheKey = NSString(string: urlString)
+        
+        if let image = cache.object(forKey: cacheKey) {
+            self.image = image
+            return
+        }
+        
+        //if we dont have cache image then run this
+        
         guard let url = URL(string: urlString) else{
             return
         }
@@ -45,6 +58,10 @@ class GFAvatarImageView: UIImageView {
             guard let image = UIImage(data: data) else {
                 return
             }
+            
+            //now once we have the image we also need to set it in cache
+            self.cache.setObject(image, forKey: cacheKey)
+            
             DispatchQueue.main.async {
                 self.image = image
             }
