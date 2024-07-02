@@ -65,26 +65,46 @@ class FollowerListViewController: UIViewController {
     }
     
     func getFollowers( username:String, page:Int){
+        
+        //calling showLoadingView before making network call
+        showLoadingView()
+    
         /*
          Here we see theres a strong refrence between self and network manager which should be there,
          Instead there should be a weak refrence , so we will use a capture list "[weak self]" which means all the self here will be
          weak
          */
         NetworkManager.shared.getFollowers(for: username, page: page) { [weak self] result in
+            
             //whenever we make self weak it gets converted to optional , so we will unwrap the optional using guard
             guard let self = self else {
                 return
             }
             
+            //calling DismissLoadingView after making network call
+            self.dismissLoadingView()
+            
             //Now since we are using result it has only two cases ..succes and failure which we will check using enum
             switch result {
             case.success(let followers):
+                
                 //checks if fetched followers are 100 or less if less than 100 means dont make another api call
                 if followers.count < 30 {
                     self.hasMoreFollowers = false
                 }
+                
                 //here when we load page 2 page 1 followers will disapper so for that to not happen we have used .append
                 self.followers.append(contentsOf: followers)
+                
+                //here we will check if after appending also followers are empty or not , if so that means user has no followers
+                if self.followers.isEmpty{
+                    let message =  "Uhh Ohh! This user has no followers :( "
+                    DispatchQueue.main.async {
+                        self.showEmptyStateView(message: message, in: self.view)
+                    }
+                    return
+                }
+                
                 self.updateData()
             case.failure(let error):
                 self.presentGFAlertOnMainThread(title: "Bad stuff", message: error.rawValue, buttonTitle: "OK")
