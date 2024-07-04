@@ -13,6 +13,8 @@ class FollowerListViewController: UIViewController {
     var filteredFollowers : [Follower] = []
     var collectionView : UICollectionView!
     var page = 1
+    //checks wether we are searching or not , intially its false
+    var isSearching = false
     //flag to check wether user has more followers or not
     var hasMoreFollowers = true
     
@@ -82,7 +84,7 @@ class FollowerListViewController: UIViewController {
         showLoadingView()
     
         /*
-         Here we see theres a strong refrence between self and network manager which should be there,
+         Here we see theres a strong refrence between self and network manager which shouldnt be there,
          Instead there should be a weak refrence , so we will use a capture list "[weak self]" which means all the self here will be
          weak
          */
@@ -176,6 +178,22 @@ extension FollowerListViewController : UICollectionViewDelegate {
             getFollowers(username: username, page: page)
         }
     }
+    
+    /*
+     This tells us what row we tapped on
+     */
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        //below checks if is searching is true or false , if true first one is executed if false the other one
+        let activeArray = isSearching ? filteredFollowers : followers
+        let follower = activeArray[indexPath.item]
+        
+        let userInfoVC = UserInfoViewController()
+        //passing the username to make a network call to show details of the user
+        userInfoVC.username = follower.login
+        //adding navigation controller
+        let navController = UINavigationController(rootViewController: userInfoVC)
+        present(navController, animated: true)
+    }
 }
 
 extension FollowerListViewController :UISearchResultsUpdating , UISearchBarDelegate {
@@ -184,6 +202,7 @@ extension FollowerListViewController :UISearchResultsUpdating , UISearchBarDeleg
         guard let filter = searchController.searchBar.text , !filter.isEmpty else{
             return
         }
+        isSearching = true
         /*
          In below closure $0 means iterating through all the present followers
          below closure checks if followers contain the filtered followers and appends them to
@@ -195,6 +214,7 @@ extension FollowerListViewController :UISearchResultsUpdating , UISearchBarDeleg
     
     //when ever cancel button is clicked show all the followers again
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = false
         updateData(on: followers)
     }
 }
