@@ -5,6 +5,7 @@
  on another hand if we want a functionality only for particular vc or anything we can use sub class
  */
 import UIKit
+import SafariServices
 
 //making this variable a global since extensions cannot have variables declared in them
 //also file private means only the members of this file can access that variable
@@ -27,6 +28,15 @@ extension  UIViewController{
             alertVC.modalTransitionStyle = .crossDissolve
             self.present(alertVC, animated: true)
         }
+    }
+    
+    /*
+     This is a function that helps present a url in safari without leaving the app
+     */
+    func presentSafariVC(with url: URL){
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.preferredControlTintColor = .systemGreen
+        present(safariVC, animated: true)
     }
     
     /*

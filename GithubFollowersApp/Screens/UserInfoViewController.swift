@@ -1,14 +1,21 @@
 import UIKit
 
+protocol UserInfoVCDelegate: AnyObject {
+    //passing user through functions so we have access to user
+    func didTapGitHubProfile(for user : User)
+    func didTapGetFollowers(for user : User)
+}
+
 class UserInfoViewController: UIViewController {
 
     let headerView = UIView()
     let itemViewOne = UIView()
     let itemViewTwo = UIView()
-    
+    let dateLabel = GFBodyLabel(textAlignment: .center)
     var itemViews: [UIView] = []
     
     var username : String!
+    weak var delegate: FollowersListVCDelegate!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,9 +43,7 @@ class UserInfoViewController: UIViewController {
             switch result {
             case.success(let user):
                 DispatchQueue.main.async {
-                    self.add(childVC: GFUserInfoHeaderViewController(user: user), to: self.headerView)
-                    self.add(childVC: GFRepoItemVC(user: user), to: self.itemViewOne)
-                    self.add(childVC: GFFollowerItemVC(user: user), to: self.itemViewTwo)
+                    self.configureUIElements(with: user)
                 }
             case .failure(let error):
                 self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "OK")
@@ -54,12 +59,27 @@ class UserInfoViewController: UIViewController {
         childVC.didMove(toParent: self)
     }
     
+    func configureUIElements(with user: User) {
+        
+        let repoItemVC = GFRepoItemVC(user: user)
+        //setting the delegate
+        repoItemVC.delegate = self
+        
+        let followersItemVC = GFFollowerItemVC(user: user)
+        followersItemVC.delegate = self
+        
+        self.add(childVC: GFUserInfoHeaderViewController(user: user), to: self.headerView)
+        self.add(childVC: repoItemVC, to: self.itemViewOne)
+        self.add(childVC: followersItemVC, to: self.itemViewTwo)
+        self.dateLabel.text = "Github since \(user.createdAt.convertToDisplayFormat())"
+    }
+    
     func layoutUI(){
         
         let padding: CGFloat = 20
         let itemHeight: CGFloat = 140
         
-        itemViews = [headerView,itemViewOne,itemViewTwo]
+        itemViews = [headerView,itemViewOne,itemViewTwo, dateLabel]
         
         
 //        instead of this we will use for loop to add all subviews
@@ -91,11 +111,44 @@ class UserInfoViewController: UIViewController {
             
             itemViewTwo.topAnchor.constraint(equalTo: itemViewOne.bottomAnchor, constant: padding),
             itemViewTwo.heightAnchor.constraint(equalToConstant: itemHeight),
+            
+            dateLabel.topAnchor.constraint(equalTo: itemViewTwo.bottomAnchor, constant: padding),
+            dateLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
     
     @objc func dismissVC(){
         dismiss(animated: true)
+    }
+
+}
+
+//lets conform to delegate
+
+extension UserInfoViewController : UserInfoVCDelegate {
+    func didTapGitHubProfile(for user: User) {
+        //show safari view controller
+        guard let url = URL(string: user.htmlUrl) else{
+            presentGFAlertOnMainThread(title: "Invalid URL", message: "The URL attached to this user is invalid", buttonTitle: "OK")
+            return
+        }
+        presentSafariVC(with: url)
+    }
+    
+    func didTapGetFollowers(for user: User) {
+        //dismiss vc
+        //tell follower screen the new user
+        
+        /*
+         Here if a user has zero followers we dont want do all the process just to show a empty screen,
+         so we will check it using guard
+         */
+        guard user.followers != 0 else {
+            presentGFAlertOnMainThread(title: "No Followers", message: "The user you selected has no followers!", buttonTitle: "OK")
+            return
+        }
+        delegate.didRequestFollowers(for: user.login)
+        dismissVC()
     }
 
 }

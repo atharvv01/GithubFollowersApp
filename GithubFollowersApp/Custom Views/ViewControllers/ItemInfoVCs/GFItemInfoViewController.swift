@@ -3,6 +3,7 @@ import UIKit
 class GFItemInfoViewController: UIViewController {
 
     var user : User!
+    weak var delegate: UserInfoVCDelegate!
     
     let stackView = UIStackView()
     let itemInfoViewOne = GFItemInfoView()
@@ -23,6 +24,7 @@ class GFItemInfoViewController: UIViewController {
         configureBackgroundView()
         configureStackView()
         layoutUI()
+        configureActionButton()
     }
     
     private func configureBackgroundView(){
@@ -37,6 +39,16 @@ class GFItemInfoViewController: UIViewController {
         stackView.addArrangedSubview(itemInfoViewOne)
         stackView.addArrangedSubview(itemInfoViewTwo)
     }
+    
+    private func configureActionButton(){
+        actionButton.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
+    }
+    
+    /*
+     We will keep this function empty here , since this is a super class,
+     we will override the functionality of this function in sub classes
+     */
+    @objc func actionButtonTapped(){}
     
     private func layoutUI(){
         let padding :CGFloat = 20

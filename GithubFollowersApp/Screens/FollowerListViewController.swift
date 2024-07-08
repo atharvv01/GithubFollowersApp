@@ -1,5 +1,13 @@
 import UIKit
 
+/*
+ This delegate is for when user taps on show followers for a particular user and
+ user should be redirected to followers list for that user
+ */
+protocol FollowersListVCDelegate: AnyObject {
+    func didRequestFollowers(for username: String)
+}
+
 class FollowerListViewController: UIViewController {
 
     //since our collection view has only one section
@@ -20,7 +28,7 @@ class FollowerListViewController: UIViewController {
     
     /*
      Here what we are doing is using diffable data source which is new in ios 13 where in when we want out table/collection view to be dynamic
-     we can use this as as we search or perform anything that makes changes in the table/collection view , it animates making changes
+     we can use this as we search or perform anything that makes changes in the table/collection view , it animates making changes
      This is done by comparing the snap shots of before and after the change
      Above was a very high level explantion of what diffable data source is and why it is used
      
@@ -190,6 +198,8 @@ extension FollowerListViewController : UICollectionViewDelegate {
         let userInfoVC = UserInfoViewController()
         //passing the username to make a network call to show details of the user
         userInfoVC.username = follower.login
+        //setting delegate
+        userInfoVC.delegate = self
         //adding navigation controller
         let navController = UINavigationController(rootViewController: userInfoVC)
         present(navController, animated: true)
@@ -216,5 +226,20 @@ extension FollowerListViewController :UISearchResultsUpdating , UISearchBarDeleg
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         isSearching = false
         updateData(on: followers)
+    }
+}
+
+extension FollowerListViewController : FollowersListVCDelegate {
+    
+    func didRequestFollowers(for username: String) {
+        self.username = username
+        title = username
+        page = 1
+        //before showing new followers for user remove the previous ones from arrays
+        followers.removeAll()
+        //set scroll view to the top , incase user has scrolled before
+        collectionView.setContentOffset(.zero, animated: true)
+        //now call the api
+        getFollowers(username: username, page: page)
     }
 }
