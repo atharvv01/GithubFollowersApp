@@ -65,8 +65,47 @@ class FollowerListViewController: UIViewController {
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.prefersLargeTitles = true
+        
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
+        navigationItem.rightBarButtonItem = addButton
     }
     
+    @objc func addButtonTapped(){
+        showLoadingView()
+        
+        /*
+         Here we will make a api call to get users info , to display the avatar of the favorited user
+         */
+        NetworkManager.shared.getUsers(for: username) { [weak self] result in
+            guard let self  = self else{
+                return
+            }
+            self.dismissLoadingView()
+            
+            switch result{
+                
+            case .success(let user):
+                
+                let favorite = Follower(login: user.login, avatarUrl: user.avatarUrl)
+                
+                PersistenceManager.updateWith(favorite: favorite, actionType: .add) { [weak self]error in
+                    guard let self = self else{
+                        return
+                    }
+                    
+                    guard let error = error else{
+                        self.presentGFAlertOnMainThread(title: "Success!", message: "You have successfully added user to favorites", buttonTitle: "OK")
+                        return
+                    }
+                    
+                    self.presentGFAlertOnMainThread(title: "Somrthing went wrong", message: error.rawValue, buttonTitle: "OK")
+                }
+                
+            case .failure(let error):
+                self.presentGFAlertOnMainThread(title: "Somrthing went wrong", message: error.rawValue, buttonTitle: "OK")
+            }
+        }
+    }
    
     
     func configureCollectionView(){
